@@ -8,8 +8,10 @@ namespace Bargreen.Services
     public class InventoryReconciliationResult
     {
         public string ItemNumber { get; set; }
-        public decimal TotalValueOnHandInInventory { get; set; }
-        public decimal TotalValueInAccountingBalance { get; set; }
+        // null values indicate that not only is that system reporting 0 value but it is reporting that the item may not even exist in the given system
+        // NOTE: this change would need approval due to the unknown nature of the client consuming this api.
+        public decimal? TotalValueOnHandInInventory { get; set; }
+        public decimal? TotalValueInAccountingBalance { get; set; }
     }
 
     public class InventoryBalance
@@ -115,7 +117,51 @@ namespace Bargreen.Services
         public async Task<IEnumerable<InventoryReconciliationResult>> ReconcileInventoryToAccounting(IEnumerable<InventoryBalance> inventoryBalances, IEnumerable<AccountingBalance> accountingBalances)
         {
             //TODO-CHALLENGE: Compare inventory balances to accounting balances and find differences
-            throw new NotImplementedException();
+
+            Dictionary<string, InventoryReconciliationResult> results = new Dictionary<string, InventoryReconciliationResult>();
+
+            foreach(var item in inventoryBalances)
+            {
+                var id = item.ItemNumber.ToLower();
+
+                // dump all records from inventory into reconcilliation collection
+                if (results.TryGetValue(id, out var result))
+                {
+                    // in case it exists in multiple locations and already exists
+                    result.TotalValueOnHandInInventory = result.TotalValueOnHandInInventory + (item.PricePerItem * item.QuantityOnHand);
+                }
+                else
+                {
+                    var record = new InventoryReconciliationResult()
+                    {
+                        ItemNumber = id,
+                        TotalValueOnHandInInventory = item.PricePerItem * item.QuantityOnHand
+                    };
+                    results.Add(id, record);
+                }
+            }
+
+            foreach(var item in accountingBalances)
+            {
+                var id = item.ItemNumber.ToLower();
+
+                // look for existing record from inventory system or create a new one
+                if (results.TryGetValue(id, out var result))
+                {
+                    result.TotalValueInAccountingBalance = item.TotalInventoryValue;
+                }
+                else
+                {
+                    var record = new InventoryReconciliationResult()
+                    {
+                        ItemNumber = id,
+                        TotalValueInAccountingBalance = item.TotalInventoryValue
+                    };
+                    results.Add(id, record);
+                }
+            }
+
+            return new List<InventoryReconciliationResult>(results.Values);
         }
     }
 }
