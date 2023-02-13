@@ -26,8 +26,15 @@ namespace Bargreen.Services
         public decimal TotalInventoryValue { get; set; }
     }
 
+    public interface IInventoryService
+    {
+        Task<IEnumerable<InventoryBalance>> GetInventoryBalances();
+        Task<IEnumerable<AccountingBalance>> GetAccountingBalances();
+        Task<IEnumerable<InventoryReconciliationResult>> ReconcileInventoryToAccounting(IEnumerable<InventoryBalance> inventoryBalances, IEnumerable<AccountingBalance> accountingBalances);
+    }
 
-    public class InventoryService
+
+    public class InventoryService : IInventoryService
     {
         public async Task<IEnumerable<InventoryBalance>> GetInventoryBalances()
         {
@@ -105,7 +112,7 @@ namespace Bargreen.Services
             };
         }
 
-        public static IEnumerable<InventoryReconciliationResult> ReconcileInventoryToAccounting(IEnumerable<InventoryBalance> inventoryBalances, IEnumerable<AccountingBalance> accountingBalances)
+        public async Task<IEnumerable<InventoryReconciliationResult>> ReconcileInventoryToAccounting(IEnumerable<InventoryBalance> inventoryBalances, IEnumerable<AccountingBalance> accountingBalances)
         {
             //TODO-CHALLENGE: Compare inventory balances to accounting balances and find differences
             throw new NotImplementedException();

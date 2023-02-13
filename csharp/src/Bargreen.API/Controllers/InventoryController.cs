@@ -14,6 +14,13 @@ namespace Bargreen.API.Controllers
     [ApiController]
     public class InventoryController : ControllerBase
     {
+        private readonly IInventoryService inventoryService;
+
+        public InventoryController(IInventoryService inventory)
+        {
+            inventoryService = inventory;
+        }
+
         [Route("InventoryBalances")]
         [HttpGet]
         public async Task<IEnumerable<InventoryBalance>> GetInventoryBalances()
@@ -35,7 +42,7 @@ namespace Bargreen.API.Controllers
         public async Task<IEnumerable<InventoryReconciliationResult>> GetReconciliation()
         {
             var inventoryService = new InventoryService();
-            return InventoryService.ReconcileInventoryToAccounting(await inventoryService.GetInventoryBalances(), await inventoryService.GetAccountingBalances());
+            return await inventoryService.ReconcileInventoryToAccounting(await inventoryService.GetInventoryBalances(), await inventoryService.GetAccountingBalances());
         }
     }
 }
