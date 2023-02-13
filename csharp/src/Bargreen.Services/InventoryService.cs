@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Bargreen.Services
 {
@@ -28,7 +29,7 @@ namespace Bargreen.Services
 
     public class InventoryService
     {
-        public IEnumerable<InventoryBalance> GetInventoryBalances()
+        public async Task<IEnumerable<InventoryBalance>> GetInventoryBalances()
         {
             return new List<InventoryBalance>()
             {
@@ -77,7 +78,7 @@ namespace Bargreen.Services
             };
         }
 
-        public IEnumerable<AccountingBalance> GetAccountingBalances()
+        public async Task<IEnumerable<AccountingBalance>> GetAccountingBalances()
         {
             return new List<AccountingBalance>()
             {
