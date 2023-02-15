@@ -111,35 +111,6 @@ namespace Bargreen.Tests
                   }
             };
 
-            var expected2 = new List<InventoryReconciliationResult>()
-            {
-                  new InventoryReconciliationResult {
-                    ItemNumber = "abc123",
-                    TotalValueOnHandInInventory = 3435M,
-                    TotalValueInAccountingBalance = 3435M
-                  },
-                  new InventoryReconciliationResult {
-                    ItemNumber = "zzz99",
-                    TotalValueOnHandInInventory = 1930.62M,
-                    TotalValueInAccountingBalance = 1930.62M
-                  },
-                  new InventoryReconciliationResult {
-                    ItemNumber = "xxccm",
-                    TotalValueOnHandInInventory = 7848M,
-                    TotalValueInAccountingBalance = 7602.75M
-                  },
-                  new InventoryReconciliationResult {
-                    ItemNumber = "xxddm",
-                    TotalValueOnHandInInventory = 11212.05M,
-                    TotalValueInAccountingBalance = null
-                  },
-                  new InventoryReconciliationResult {
-                    ItemNumber = "fbr77",
-                    TotalValueOnHandInInventory = null,
-                    TotalValueInAccountingBalance = 17.99M
-                  }
-            };
-
             var invService = new InventoryService();
             var actual = await invService.ReconcileInventoryToAccounting(inventorySystem, accountingSystem);
 
