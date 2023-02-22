@@ -3,13 +3,13 @@ declare @inventory table (
     ItemNumber varchar(50) not null,
     WarehouseLocation varchar(50) not null,
     QuantityOnHand int not null,
-    PricePerItem decimal not null
+    PricePerItem decimal(10,2) not null -- **WARNING: had to alter this data field to maintain precision to 2 decimal places
 )
 
 --Create a table to hold accounting balances: 
 declare @accounting table (
     ItemNumber varchar(50) not null,
-    TotalInventoryValue decimal not null
+    TotalInventoryValue decimal(10,2) not null
 )
 
 --Mock up some inventory balances
@@ -27,4 +27,23 @@ INSERT INTO @accounting VALUES ('xxccM', 7602.75)
 INSERT INTO @accounting VALUES ('fbr77', 17.99)
 
 --TODO-CHALLENGE: Write a query to reconcile matches/differences between the inventory and accounting tables
-SELECT * FROM ...
+
+SELECT 
+    coalesce(acc.ItemNumber, inv.ItemNumber) as ItemNumber,
+    SUM(inv.TotalValueOnHandInInventory) as TotalValueOnHandInInventory,
+    SUM(acc.TotalInventoryValue) as TotalValueInAccountingBalance
+FROM (
+		SELECT 
+			ItemNumber,
+			sum(TotalInventoryValue) as TotalInventoryValue
+		FROM @accounting
+		GROUP BY ItemNumber
+	) as acc 
+	full join (
+		SELECT 
+			ItemNumber,
+			sum(CONVERT(decimal(10,0), QuantityOnHand) * PricePerItem) as TotalValueOnHandInInventory
+		FROM @inventory
+		GROUP BY ItemNumber
+	) as inv on inv.ItemNumber = acc.ItemNumber
+GROUP BY coalesce(acc.ItemNumber, inv.ItemNumber), TotalInventoryValue;
