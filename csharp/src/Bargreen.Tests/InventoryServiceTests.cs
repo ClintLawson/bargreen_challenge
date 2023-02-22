@@ -62,6 +62,16 @@ namespace Bargreen.Tests
             {
                 new AccountingBalance()
                 {
+                     ItemNumber = "fbr77",
+                     TotalInventoryValue = 16.99M
+                },
+                new AccountingBalance()
+                {
+                     ItemNumber = "fbr77",
+                     TotalInventoryValue = 1.00M
+                },
+                new AccountingBalance()
+                {
                      ItemNumber = "ABC123",
                      TotalInventoryValue = 3435M
                 },
@@ -74,11 +84,6 @@ namespace Bargreen.Tests
                 {
                      ItemNumber = "xxccM",
                      TotalInventoryValue = 7602.75M
-                },
-                new AccountingBalance()
-                {
-                     ItemNumber = "fbr77",
-                     TotalInventoryValue = 17.99M
                 }
             };
 
@@ -145,5 +150,4 @@ namespace Bargreen.Tests
             return obj.ItemNumber.GetHashCode();
         }
     }
-
 }

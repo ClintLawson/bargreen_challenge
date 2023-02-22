@@ -128,7 +128,7 @@ namespace Bargreen.Services
                 if (results.TryGetValue(id, out var result))
                 {
                     // in case it exists in multiple locations and already exists
-                    result.TotalValueOnHandInInventory = result.TotalValueOnHandInInventory + (item.PricePerItem * item.QuantityOnHand);
+                    result.TotalValueOnHandInInventory = (result.TotalValueOnHandInInventory ?? 0) + (item.PricePerItem * item.QuantityOnHand);
                 }
                 else
                 {
@@ -148,7 +148,13 @@ namespace Bargreen.Services
                 // look for existing record from inventory system or create a new one
                 if (results.TryGetValue(id, out var result))
                 {
-                    result.TotalValueInAccountingBalance = item.TotalInventoryValue;
+                    // ln 157 was previously -> result.TotalValueInAccountingBalance = item.TotalInventoryValue
+                    // previously this value assignment was not considering accounting could have multiple
+                    // ...entries for an ItemNumber (tests did not include multiple entries with same id in accounting data) and simply assigned TotalInventoryValue to TotalValueInAccountingBalance.
+                    // ...secondly when it was updated to add in prexisting TotalValueInAccountingBalance (which is by default null when created)
+                    // ...it would evaluate TotalValueInAccountingBalance(null) + TotalInventoryValue(some number) to null by default without error.
+                    // Tests for this method have been reverified and all are passing.
+                    result.TotalValueInAccountingBalance = (result.TotalValueInAccountingBalance ?? 0) + item.TotalInventoryValue;
                 }
                 else
                 {
